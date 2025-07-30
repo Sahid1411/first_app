@@ -104,76 +104,87 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     bool isLastQuestion = currentQuestion == questionAns.length - 1;
 
+    final screenSize = MediaQuery.of(context).size;
+    final dynamicWidth = screenSize.width * 0.9;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Quiz App'),
         foregroundColor: Colors.white,
         backgroundColor: Colors.deepPurple,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Question card
-            SizedBox(
-              height: 160,
-              child: Card(
-                elevation: 2,
-                surfaceTintColor: Colors.blue,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      questionAns[currentQuestion][0],
-                      style: const TextStyle(fontSize: 18.0),
-                      textAlign: TextAlign.center,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: SizedBox(
+              height: 500,
+              width: dynamicWidth,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Question card
+                  SizedBox(
+                    height: 160,
+                    child: Card(
+                      elevation: 2,
+                      surfaceTintColor: Colors.blue,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            questionAns[currentQuestion][0],
+                            style: const TextStyle(fontSize: 18.0),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                      
+                  // Options
+                  ...List.generate(options[currentQuestion].length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: ElevatedButton(
+                        onPressed: () => handleAnswerTap(index),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: getOptionColor(index),
+                          foregroundColor: Colors.black,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [Text(options[currentQuestion][index])],
+                        ),
+                      ),
+                    );
+                  }),
+                      
+                  const SizedBox(height: 20),
+                      
+                  // Navigation or Submit
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: currentQuestion > 0 ? goToBack : null,
+                        child: const Text('Back'),
+                      ),
+                      isLastQuestion
+                          ? ElevatedButton(
+                              onPressed: submitQuiz,
+                              child: const Text('Submit'),
+                            )
+                          : ElevatedButton(
+                              onPressed: goToNext,
+                              child: const Text('Next'),
+                            ),
+                    ],
+                  ),
+                ],
               ),
             ),
-
-            // Options
-            ...List.generate(options[currentQuestion].length, (index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: ElevatedButton(
-                  onPressed: () => handleAnswerTap(index),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: getOptionColor(index),
-                    foregroundColor: Colors.black,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [Text(options[currentQuestion][index])],
-                  ),
-                ),
-              );
-            }),
-
-            const SizedBox(height: 20),
-
-            // Navigation or Submit
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  onPressed: currentQuestion > 0 ? goToBack : null,
-                  child: const Text('Back'),
-                ),
-                isLastQuestion
-                    ? ElevatedButton(
-                        onPressed: submitQuiz,
-                        child: const Text('Submit'),
-                      )
-                    : ElevatedButton(
-                        onPressed: goToNext,
-                        child: const Text('Next'),
-                      ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
